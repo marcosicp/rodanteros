@@ -1,0 +1,152 @@
+.card__container {
+  display: flex;
+  justify-content: space-between;
+  height: 160px;
+  width: 100%;
+  margin: 20px 0;
+  background-color: var(--white);
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  border-radius: 5px;
+}
+
+.image__container {
+  width: 38%;
+  height: 100%;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.product__image {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.card__text {
+  position: relative;
+  width: 60%;
+  margin: 5px 5px 5px 10px;
+  padding-top: 5px;
+}
+
+.card__text .name {
+  font-size: 0.9rem;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.card__text .description {
+  margin: 8px 0;
+  line-height: 22px;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  font-size: 14px;
+}
+
+.desktop {
+  display: none;
+}
+
+.card__text-details .reviews {
+  text-decoration: none;
+  position: absolute;
+  bottom: 2px;
+  left: 2px;
+  font-size: 12px;
+  font-weight: 400;
+  padding: 3px 5px;
+  border-radius: 0 5px;
+  background-color: var(--btn-bg);
+  color: var(--white);
+  /* color: var(--secondary-color);
+  background-color: rgb(233, 186, 180); */
+}
+
+.card__text-details .reviews:hover {
+  background-color: var(--white);
+  color: var(--btn-bg);
+  outline: 1px solid var(--btn-bg);
+}
+
+.del-btn {
+  position: absolute;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  color: red;
+  padding: 2px;
+  border-radius: 60%;
+  bottom: 2px;
+  right: 2px;
+}
+
+.del-btn:hover {
+  color: var(--secondary-color);
+}
+
+.card__text-sub-details {
+  position: absolute;
+  bottom: 30px;
+  margin-left: 2px;
+}
+
+.card__text-sub-details h5 {
+  margin-top: 5px;
+}
+
+@media only screen and (min-width: 900px) {
+  .card__container {
+    width: 48%;
+    height: 190px;
+  }
+
+  .image__container {
+    width: 45%;
+    height: 100%;
+  }
+
+  .card__text {
+    width: 53%;
+  }
+
+  .card__text .reviews {
+    position: absolute;
+    bottom: 4px;
+    left: 4px;
+    padding: 5px 10px;
+    border-radius: 0 5px;
+  }
+
+  .card__text-sub-details {
+    position: absolute;
+    bottom: 40px;
+  }
+
+  .card__text .name {
+    font-size: 1rem;
+  }
+
+  .card__text .description {
+    font-size: 16px;
+  }
+
+  .desktop {
+    display: block;
+  }
+
+  .mobile {
+    display: none;
+  }
+}
+
+/* @media only screen and (min-width: 0) {
+  .card__container {
+    width: 48%;
+    height: 220px;
+    border: 1px solid red;
+  }
+} */

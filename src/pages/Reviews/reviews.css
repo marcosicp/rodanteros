@@ -1,0 +1,26 @@
+.reviews__container {
+  margin: 40px 0;
+}
+
+.review-btn {
+  width: 140px;
+  margin-top: 20px;
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+  border: none;
+  outline: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.review-btn:hover {
+  background-color: var(--hover-color);
+  color: var(--light-color);
+}
+
+.login-msg {
+  text-align: center;
+  font-weight: 800;
+  color: var(--tertiary-color);
+}

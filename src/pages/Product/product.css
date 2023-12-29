@@ -1,0 +1,11 @@
+.product__container > div {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.input__container input[type="file"] {
+  padding: 10px;
+  width: 100%;
+  color: var(--secondary-color);
+}
