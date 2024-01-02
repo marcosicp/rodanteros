@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 
 import Comment from '../../components/Comment/Comment';
 
-const db = firebase.firestore().collection('campings');
+const db = firebase.firestore().collection('campingsPending');
 
 const Reviews = () => {
   const {user} = useAuth();

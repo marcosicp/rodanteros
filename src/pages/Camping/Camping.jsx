@@ -5,17 +5,21 @@ import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-toastify';
 import Loader from '../../components/Loader';
 
-import './product.css';
+import './camping.css';
 import { useNavigate } from 'react-router-dom';
 
-const db = firebase.firestore().collection('campings');
+const db = firebase.firestore().collection('campingsPending');
 
-const Product = () => {
+const Camping = () => {
   const history = useNavigate();
   const {user} = useAuth();
 
   const [productName, setProductName] = useState('');
   const [productPrice, setProductPrice] = useState('');
+  const [productPhone, setProductPhone] = useState('');
+  const [productState, setProductState] = useState('');
+  const [productLocation, setProductLocation] = useState('');
+  const [productAddress, setProductAddress] = useState('');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState(null);
   const [review, setReview] = useState([]);
@@ -38,6 +42,10 @@ const Product = () => {
       ownerEmail: user? user.email : 'Anonymous',
       name: productName,
       price: productPrice,
+      address: productAddress,
+      phone: productPhone,
+      location: productLocation,
+      state: productState,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       description: description,
       imageUrl: imageUrl,
@@ -85,6 +93,26 @@ const Product = () => {
       </div>
 
       <div className="input__container">
+        <label>Direccion</label>
+        <input type="text" value={productAddress} onChange={(e) => setProductAddress(e.target.value)} />
+      </div>
+
+      <div className="input__container">
+        <label>Localidad</label>
+        <input type="text" value={productState} onChange={(e) => setProductState(e.target.value)} required/>
+      </div>
+
+      <div className="input__container">
+        <label>Provincia</label>
+        <input type="text" value={productLocation} onChange={(e) => setProductLocation(e.target.value)} required/>
+      </div>
+
+      <div className="input__container">
+        <label>Telefono</label>
+        <input type="text" value={productPhone} onChange={(e) => setProductPhone(e.target.value)} />
+      </div>
+
+      <div className="input__container">
         <label>Precio</label>
         <input type="number" value={productPrice} onChange={(e) => setProductPrice(e.target.value)} required/>
       </div>
@@ -109,4 +137,4 @@ const Product = () => {
   )
 }
 
-export default Product
+export default Camping

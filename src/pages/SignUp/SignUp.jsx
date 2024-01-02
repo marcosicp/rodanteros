@@ -26,21 +26,21 @@ const SignUp = () => {
       <h2 className="heading">Create an account</h2>
       {error && <ErrorDiv component={error}/>}
       <div className="input__container">
-        <label>Username</label>
-        <input type="text" placeholder="Enter your username" value={username} onChange={(e) => setUsername(e.target.value)}/>
+        <label>Usuario</label>
+        <input type="text" placeholder="Ingrese su usuario" value={username} onChange={(e) => setUsername(e.target.value)}/>
       </div>
 
       <div className="input__container">
         <label>Email</label>
-        <input type="text" placeholder="Enter your email" required value={email} onChange={(e) => setEmail(e.target.value)}/>
+        <input type="text" placeholder="Ingrese su email" required value={email} onChange={(e) => setEmail(e.target.value)}/>
       </div>
 
       <div className="input__container">
-        <label>Password</label>
-        <input type="password" placeholder="Enter your password" required value={password} onChange={(e) => setPassword(e.target.value)}/>
+        <label>Contraseña</label>
+        <input type="password" placeholder="Ingrese su contraseña" required value={password} onChange={(e) => setPassword(e.target.value)}/>
       </div>
 
-      <button className="btn">{loading ? <Loader height='1em'/> : 'Sign Up'}</button>
+      <button className="btn">{loading ? <Loader height='1em'/> : 'Registrarme'}</button>
     </form>
   )
 }

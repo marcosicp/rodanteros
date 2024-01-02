@@ -6,7 +6,7 @@ import firebase from '../../firebase';
 import './card.css';
 
 
-const db = firebase.firestore().collection('campings');
+const db = firebase.firestore().collection('campingsPending');
 
 
 const Card = ({prod}) => {
@@ -43,8 +43,8 @@ const Card = ({prod}) => {
       </div>
   
       <div className="card__text">
-        {user ? user.uid === prod.owner && 
-        <button className="del-btn" onClick={() => removeFromDB(prod)}><MdDelete /></button> : null}
+        {/* {user ? user.uid === prod.owner && 
+        <button className="del-btn" onClick={() => removeFromDB(prod)}><MdDelete /></button> : null} */}
         <div className="card__text-details">
           <h4 className="name">{prod.name}</h4>
           <h5 className="name">${prod.price}</h5>

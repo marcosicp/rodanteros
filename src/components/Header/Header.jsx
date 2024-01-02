@@ -22,13 +22,14 @@ const Header = () => {
    <header className="header">
       <nav className="navbar">
        <Link to="/" className="logo-link">
-        Reviews
+        Rodanteros
        </Link>
 
         <div className="navbar__links-container">
         <div className="nav__links">
           <Link to="/" className="nav__link">Home</Link>
-          <Link to="/product" className="nav__link">Camping</Link>
+          {/* <Link to="/product" className="nav__link">Camping</Link> */}
+          {user && <Link to="/campings" className="nav__link">Camping</Link>}
           {!user && <Link to="/login" className="nav__link login">Login</Link>}
           {!user && <Link to="/signup" className="nav__link login">Sign up</Link>}
           {user && <Link to="/" className="nav__link login" onClick={handleLogout}>Logout</Link>}

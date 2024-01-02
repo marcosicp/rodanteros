@@ -30,7 +30,7 @@ const Home = () => {
       setProducts(items);
       setLoading(false);
     })
-     }catch(err){debugger;
+     }catch(err){
       setError(err.message);
       setLoading(false)
      }  
@@ -47,10 +47,10 @@ const Home = () => {
   return (
     <div className="container">
       <h2 className="heading">Busca tu camping ideal</h2>
-      <input type="text" placeholder="Search your favorite products..." value={value} onChange={(e) => setValue(e.target.value)} className="search__input"/>
+      <input type="text" placeholder="Busca tu camping ideal..." value={value} onChange={(e) => setValue(e.target.value)} className="search__input"/>
         <div className="products__results">
           {loading && <PageLoader/>}
-          {error && <h5>Something went wrong</h5>}
+          {error && <h5>Algo salio mal</h5>}
           {filtered && filtered.map((prod => (
             <Card prod={prod} key={prod.name} />
           )))}

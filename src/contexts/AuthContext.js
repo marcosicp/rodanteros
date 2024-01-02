@@ -14,7 +14,7 @@ const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const signUp = (email, password, name) => {
+  const signUp = async (email, password, name) => {
     setLoading(false);
     return firebase
       .auth()
@@ -27,13 +27,14 @@ const AuthProvider = ({ children }) => {
         });
         setLoading(false);
         window.location.replace("/login");
-        toast.success("Successfully created account!", {
+        toast.success("Usuario creado correctamente!", {
           theme: "colored",
           autoClose: 2000,
         });
         return response.user;
       })
       .catch((err) => {
+        debugger;
         setError(err.message);
         setLoading(false);
       });
@@ -48,7 +49,7 @@ const AuthProvider = ({ children }) => {
         setUser(response.user);
         setLoading(false);
         window.location.replace("/");
-        toast.success("Successfully signed in", {
+        toast.success("Bienvenido!", {
           theme: "colored",
           autoClose: 2000,
         });
@@ -76,7 +77,7 @@ const AuthProvider = ({ children }) => {
       .sendPasswordResetEmail(email)
       .then(() => {
         setLoading(false);
-        toast.success("Please check your email to reset your password", {
+        toast.success("Por favor, revisa tu email para restablecer tu contraseña", {
           theme: "colored",
           autoClose: 2000,
         });
@@ -90,14 +91,15 @@ const AuthProvider = ({ children }) => {
 
   const signInWithGoogle = () => {
     setLoading(true);
+
     return firebase
       .auth()
       .signInWithPopup(new firebase.auth.GoogleAuthProvider())
-      .then((response) => {
+      .then(async (response) => {
         setUser(response.user);
         setLoading(false);
         window.location.replace("/");
-        toast.success("Successfully signed in!", {
+        toast.success("Bienvenido!", {
           theme: "colored",
           autoClose: 2000,
         });
@@ -106,7 +108,7 @@ const AuthProvider = ({ children }) => {
       .catch((err) => {
         setError(err.message);
         setLoading(false);
-        toast.error(error ? `${error}` : "Something went wrong!", {
+        toast.error(error ? `${error}` : "Algo salio mal!", {
           theme: "colored",
           autoClose: 2000,
         });

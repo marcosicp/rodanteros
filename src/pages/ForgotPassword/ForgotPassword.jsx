@@ -20,14 +20,14 @@ const ForgotPassword = () => {
 
   return (
     <form onSubmit={handleSubmit} className="product__container">
-      <h2 className="heading">Forgot Password</h2>
+      <h2 className="heading">Olvide mi contraseña</h2>
       {error && <ErrorDiv component={error}/>}
       <div className="input__container">
         <label>Email</label>
-        <input type="text" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)}/>
+        <input type="text" placeholder="Ingrese su email" value={email} onChange={(e) => setEmail(e.target.value)}/>
       </div>
 
-      <button className="btn">{loading ? <Loader /> : 'Send Reset Email'}</button>
+      <button className="btn">{loading ? <Loader /> : 'Restablecer contraseña'}</button>
     </form>
   )
 }

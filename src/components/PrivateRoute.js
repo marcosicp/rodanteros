@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 const PrivateRoute = ({children, ...rest}) => {
 
   const {user} = useAuth()
-debugger
+
   return user ? 
     children
    : (
