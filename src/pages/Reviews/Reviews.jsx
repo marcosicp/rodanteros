@@ -3,13 +3,13 @@ import { useParams } from "react-router-dom";
 import firebase from '../../firebase';
 import { useAuth } from '../../contexts/AuthContext';
 import './reviews.css';
-import ProductCard from '../../components/ProductCard/ProductCard';
+import CampingCard from '../../components/CampingCard/CampingCard';
 import Loader from '../../components/Loader';
 import { toast } from 'react-toastify';
-
+  
 import Comment from '../../components/Comment/Comment';
 
-const db = firebase.firestore().collection('campingsPending');
+const db = firebase.firestore().collection('campings');
 
 const Reviews = () => {
   const {user} = useAuth();
@@ -22,6 +22,7 @@ const Reviews = () => {
   const { id } = useParams();
 
   useEffect(() => {
+    
     const getProduct = () => {
       setLoading(true)
      try {
@@ -30,6 +31,7 @@ const Reviews = () => {
     .onSnapshot(querySnapShot => {
       const items = [];
       querySnapShot.forEach(doc => {
+        
         items.push(doc.data())
       })
       setProduct(items)
@@ -79,7 +81,7 @@ const Reviews = () => {
     <div className="product__container">
       {product && product.map(prod => (
         <div key={prod.id}>
-          <ProductCard prod={prod}/>
+          <CampingCard prod={prod}/>
         </div>
       ))}
       
@@ -93,7 +95,7 @@ const Reviews = () => {
       {user ? 
       <form onSubmit={handleSubmit} className="review__form">
         <textarea cols="10" rows="10" placeholder="Por favor deje su observación" required value={rev} onChange={(e) => setRev(e.target.value)}></textarea>
-        <button type="submit" className="review-btn">{loading ? <Loader /> : 'Submit review'}</button>
+        <button type="submit" className="review-btn">{loading ? <Loader /> : 'Enviar review'}</button>
       </form> : <div className="login-msg">Por favor registrese para dejar una observación</div>}
     </div>
   )

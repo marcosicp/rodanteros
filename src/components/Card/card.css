@@ -1,7 +1,7 @@
 .card__container {
   display: flex;
   justify-content: space-between;
-  height: 160px;
+  height: 200px;
   width: 100%;
   margin: 20px 0;
   background-color: var(--white);
@@ -54,8 +54,8 @@
 .card__text-details .reviews {
   text-decoration: none;
   position: absolute;
-  bottom: 2px;
-  left: 2px;
+  bottom: 1px;
+  right: 2px;
   font-size: 12px;
   font-weight: 400;
   padding: 3px 5px;
@@ -115,15 +115,15 @@
 
   .card__text .reviews {
     position: absolute;
-    bottom: 4px;
-    left: 4px;
+    bottom: 1px;
+    right: 4px;
     padding: 5px 10px;
     border-radius: 0 5px;
   }
 
   .card__text-sub-details {
     position: absolute;
-    bottom: 40px;
+    bottom: 1px;
   }
 
   .card__text .name {
@@ -136,6 +136,7 @@
 
   .desktop {
     display: block;
+    height: 200px;
   }
 
   .mobile {

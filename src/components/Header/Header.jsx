@@ -41,10 +41,10 @@ const Header = () => {
 
         {isOpen && <div className="nav__links-mobile">
           <Link to="/" className="nav__link" onClick={() => setIsOpen(false)}>Home</Link>
-          <Link to="/product" className="nav__link" onClick={() => setIsOpen(false)}>Product</Link>
-          {!user && <Link to="/login" className="nav__link login" onClick={() => setIsOpen(false)}>Login</Link>}
-          {!user && <Link to="/signup" className="nav__link login" onClick={() => setIsOpen(false)}>Sign up</Link>}
-          {user && <Link to="/" className="nav__link login" onClick={handleLogout}>Logout</Link>}
+          <Link to="/campings" className="nav__link" onClick={() => setIsOpen(false)}>Campings</Link>
+          {!user && <Link to="/login" className="nav__link login" onClick={() => setIsOpen(false)}>Ingresar</Link>}
+          {!user && <Link to="/signup" className="nav__link login" onClick={() => setIsOpen(false)}>Registro</Link>}
+          {user && <Link to="/" className="nav__link login" onClick={handleLogout}>Salir</Link>}
         </div>}
         </div>   
       </nav>

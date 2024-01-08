@@ -34,7 +34,7 @@ const AuthProvider = ({ children }) => {
         return response.user;
       })
       .catch((err) => {
-        debugger;
+        
         setError(err.message);
         setLoading(false);
       });

@@ -17,11 +17,11 @@ const Comment = ({review, handleClick}) => {
           <h3>{review.username}</h3>
           <p>{review.review}</p>
         </div>
-      {user ? user.uid === review.owner && 
+      {/* {user ? user.uid === review.owner && 
         <button onClick={() => handleClick(review.review)} className="delete-btn">
           <MdDelete className="delete-icon"/>
         </button>
-      : null}            
+      : null}             */}
     </div>
   )
 }

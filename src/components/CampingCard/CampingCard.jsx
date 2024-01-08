@@ -1,10 +1,11 @@
 import {  useNavigate } from 'react-router-dom';
 import {MdOutlineKeyboardBackspace} from 'react-icons/md';
-import './productCard.css';
+import './campingCard.css';
 
-const ProductCard = ({prod}) => {
+const CampingCard = ({prod}) => {
 
   const history = useNavigate();
+  
   return (
     <div className="product__card-container">
       <button className="back-btn" onClick={()=>history('/')}>
@@ -25,4 +26,4 @@ const ProductCard = ({prod}) => {
   )
 }
 
-export default ProductCard
+export default CampingCard
