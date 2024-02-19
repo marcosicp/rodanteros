@@ -14,7 +14,7 @@
   --tertiary-color: #3f72af;
   --light-color: #dbe2ef;
   --white: #ffffff;
-  --btn-bg: #ae1feb;
+  --btn-bg: #196F42;
 }
 
 body {
@@ -126,7 +126,7 @@ label {
 
 @media only screen and (min-width: 768px) {
   .container {
-    width: 80%;
+    width: 81%;
     margin: 60px auto 20px auto;
   }
 

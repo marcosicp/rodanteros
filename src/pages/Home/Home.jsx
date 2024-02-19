@@ -1,52 +1,48 @@
-import './home.css';
-import { useState, useEffect } from 'react';
-import firebase from '../../firebase';
+import "./home.css";
+import { useState, useEffect } from "react";
+import firebase from "../../firebase";
 
 //Components
-import Card from '../../components/Card/Card';
-import PageLoader from '../../components/PageLoader';
+import Card from "../../components/Card/Card";
+import PageLoader from "../../components/PageLoader";
 
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
-import { Box } from '@mui/material';
-
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
+import Box, { BoxProps } from "@mui/material/Box";
+import iconRodanteros from "../../assets/rodanteros_img.png";
 //Firestore database
-const db = firebase.firestore().collection('campings');
+const db = firebase.firestore().collection("campings");
 
 const Home = () => {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
-
     setLoading(true);
-    getProducts()
-
-  }, [])
+    getProducts();
+  }, []);
 
   //Get all products from firestore
   const getProducts = () => {
     setLoading(true);
     try {
-      db
-        .orderBy('createdAt', 'desc')
-        .onSnapshot(querySnapShot => {
-          const items = [];
+      db.orderBy("createdAt", "desc").onSnapshot((querySnapShot) => {
+        const items = [];
 
-          querySnapShot.forEach(doc => {
-            items.push(doc.data())
-          })
-          setProducts(items);
-          setLoading(false);
-        })
+        querySnapShot.forEach((doc) => {
+          items.push(doc.data());
+        });
+        setProducts(items);
+        setLoading(false);
+      });
     } catch (err) {
       setError(err.message);
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState("");
 
   // const filtered = !value ? products : products?.filter((product) => product?.name?.toLowerCase().includes(value.toLowerCase()));
 
@@ -81,29 +77,51 @@ const Home = () => {
     if (e) {
       // e.preventDefault()
       // try {
-      var a = await db.where('location', '==', e.label).get();
-      a.docs.forEach(doc => {
-        items.push(doc.data())
-      })
+      var a = await db.where("location", "==", e.label).get();
+      a.docs.forEach((doc) => {
+        items.push(doc.data());
+      });
       setProducts(items);
       setLoading(false);
-      
     } else {
       getProducts();
     }
-
-  }
+  };
 
   return (
     <div className="container">
-      <h2 className="heading">Busca tu camping ideal</h2>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          pb: 2,
+          // m: 1,
+          bgcolor: "background.paper",
+          borderRadius: 1,
+        }}
+      >
+        {/* <Item>Item 1</Item> */}
+        <div style={{ display: "flex", alignItems: "center" }}>
+          {/* Con la ayuda de  */}
+          <img src={iconRodanteros} height={50} />
+          <div style={{ paddingLeft: "5px" }}> Rodanteros Argentinos</div>
+        </div>
+        <h2 className="heading">Busca tu camping ideal</h2>
+        <div></div>
+      </Box>
+
+      {/* <Box sx={{ display: 'inline' }} >
+        Con la ayuda de  <img src={iconRodanteros} height={60}/>
+      
+      <h2  className="heading">Busca tu camping ideal</h2>
+      </Box> */}
 
       <Box display="flex" alignItems="flex-start">
         <Autocomplete
           disablePortal
           id="combo-box-demo"
           options={provincesArgentina}
-          sx={{ width: 300, }}
+          sx={{ width: 300 }}
           onChange={(e, v, r, d) => findProvince(v)}
           renderInput={(params) => <TextField {...params} label="Provincia" />}
         />
@@ -118,14 +136,10 @@ const Home = () => {
       <div className="products__results">
         {loading && <PageLoader />}
         {error && <h5>Algo salio mal</h5>}
-        {products && products.map((prod => (
-          <Card prod={prod} key={prod.name} />
-        )))}
+        {products && products.map((prod) => <Card prod={prod} key={prod.name} />)}
       </div>
-
-
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
