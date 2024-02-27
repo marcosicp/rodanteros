@@ -31,6 +31,7 @@ const AuthProvider = ({ children }) => {
           theme: "colored",
           autoClose: 2000,
         });
+        firebase.analytics().logEvent('user_create');
         return response.user;
       })
       .catch((err) => {
