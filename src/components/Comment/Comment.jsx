@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 
 
 import './comment.css'
+import { Rating } from '@mui/material';
 
 const Comment = ({review, handleClick}) => {
 
@@ -15,6 +16,14 @@ const Comment = ({review, handleClick}) => {
       <Avatar color={Avatar.getRandomColor('sitebase', ['red', 'green', 'blue'])} name={review.username? `${review.username.substring(0, 1)} ${review.username.substring(1, 2)}` : 'unknown'} className="avatar" size="40"/>
         <div className="review">
           <h3>{review.username}</h3>
+          <Rating
+            name="simple-controlled"
+            value={review.raiting}
+            precision={0.5}
+            // onChange={(event, newValue) => {
+            //   setRaitingValue(newValue);
+            // }}
+          />
           <p>{review.review}</p>
         </div>
       {/* {user ? user.uid === review.owner && 

@@ -27,7 +27,7 @@ const Home = () => {
   const getProducts = () => {
     setLoading(true);
     try {
-      db.orderBy("createdAt", "desc").onSnapshot((querySnapShot) => {
+      db.orderBy("createdAt", "desc").get().then((querySnapShot) => {
         const items = [];
 
         querySnapShot.forEach((doc) => {
@@ -95,26 +95,33 @@ const Home = () => {
           display: "flex",
           justifyContent: "space-between",
           pb: 2,
-          // m: 1,
-          bgcolor: "background.paper",
           borderRadius: 1,
         }}
       >
-        {/* <Item>Item 1</Item> */}
-        <div style={{ display: "flex", alignItems: "center" }}>
-          {/* Con la ayuda de  */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            width: "33.33%",
+          }}
+        >
           <img src={iconRodanteros} height={50} />
           <div style={{ paddingLeft: "5px" }}> Rodanteros Argentinos</div>
         </div>
-        <h2 className="heading">Busca tu camping ideal</h2>
-        <div></div>
-      </Box>
+        <div
+          style={{
+            textAlign: "center",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "33.33%",
+          }}
+        >
+          <h2>Busca tu camping ideal</h2>
+        </div>
 
-      {/* <Box sx={{ display: 'inline' }} >
-        Con la ayuda de  <img src={iconRodanteros} height={60}/>
-      
-      <h2  className="heading">Busca tu camping ideal</h2>
-      </Box> */}
+        <div style={{ display: "flex", alignItems: "center", width: "33.33%" }}></div>
+      </Box>
 
       <Box display="flex" alignItems="flex-start">
         <Autocomplete
@@ -125,18 +132,11 @@ const Home = () => {
           onChange={(e, v, r, d) => findProvince(v)}
           renderInput={(params) => <TextField {...params} label="Provincia" />}
         />
-        {/* <Autocomplete
-          disablePortal
-          id="combo-box-demo"
-          options={provincesArgentina}
-          sx={{ width: 300, }}
-          renderInput={(params) => <TextField {...params} label="Localidad" />}
-        /> */}
       </Box>
       <div className="products__results">
         {loading && <PageLoader />}
         {error && <h5>Algo salio mal</h5>}
-        {products && products.map((prod) => <Card prod={prod} key={prod.name} />)}
+        {products && products.map((camping) => <Card campingParam={camping} key={camping.name} />)}
       </div>
     </div>
   );

@@ -1,40 +1,52 @@
-import { useState } from 'react';
-import firebase from '../../firebase';
-import { v4 as uuidv4 } from 'uuid';
-import { useAuth } from '../../contexts/AuthContext';
-import { toast } from 'react-toastify';
-import Loader from '../../components/Loader';
+import { useState } from "react";
+import firebase from "../../firebase";
+import { v4 as uuidv4 } from "uuid";
+import { useAuth } from "../../contexts/AuthContext";
+import { toast } from "react-toastify";
+import Loader from "../../components/Loader";
 
-import './camping.css';
-import { useNavigate } from 'react-router-dom';
-import { Autocomplete, TextField } from '@mui/material';
+import "./camping.css";
+import { useNavigate } from "react-router-dom";
+import { Autocomplete, TextField } from "@mui/material";
+import UploadFiles from "../../components/FileUploader";
 
-const db = firebase.firestore().collection('campingsPending');
+const db = firebase.firestore().collection("campingsPending");
 
 const Camping = () => {
   const history = useNavigate();
   const { user } = useAuth();
 
-  const [productName, setProductName] = useState('');
-  const [productPrice, setProductPrice] = useState('');
-  const [productPhone, setProductPhone] = useState('');
-  const [productState, setProductState] = useState('');
-  const [productLocation, setProductLocation] = useState('');
-  const [productAddress, setProductAddress] = useState('');
-  const [description, setDescription] = useState('');
+  const [productName, setProductName] = useState("");
+  const [productPrice, setProductPrice] = useState("");
+  const [productPhone, setProductPhone] = useState("");
+  const [productState, setProductState] = useState("");
+  const [productLocation, setProductLocation] = useState("");
+  const [productAddress, setProductAddress] = useState("");
+  const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState(null);
   const [review, setReview] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
+  const [fileData, setFileData] = useState([]);
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    const storageRef = firebase.storage().ref();
-    const fileRef = storageRef.child(file.name);
-    await fileRef.put(file);
-    const url = await fileRef.getDownloadURL();
-    setImageUrl(url);
-  }
+  const uploadToFirebase = async (e) => {
+    for (let i = 0; i < fileData.length; i++) {
+      const file = fileData[i];
+    
+      try {
+        const storageRef = firebase.storage().ref("campings/" + camping.id + "/" + file.name);
+        const fileRef = storageRef.child(file.name);
+        await fileRef.put(file);
+        const url = await fileRef.getDownloadURL();
+        camping.imagesUrls.push(url);
+      } catch (error) {
+        // Handle any errors that occur during upload
+        console.error("Error uploading file:", error);
+      }
+    }
+    await uploadProduct(camping);
+    // setImageUrl(url);
+  };
 
   const provincesArgentina = [
     { label: "Buenos Aires", isoCode: "AR-B" },
@@ -62,11 +74,11 @@ const Camping = () => {
     { label: "Tucumán", isoCode: "AR-T" },
   ];
 
-  const prod = {
+  const camping = {
     id: uuidv4(),
-    username: user.displayName ? user.displayName : 'Anonymous',
-    owner: user ? user.uid : 'Anonymous',
-    ownerEmail: user ? user.email : 'Anonymous',
+    username: user.displayName ? user.displayName : "Anonymous",
+    owner: user ? user.uid : "Anonymous",
+    ownerEmail: user ? user.email : "Anonymous",
     name: productName,
     price: productPrice,
     address: productAddress,
@@ -75,49 +87,63 @@ const Camping = () => {
     state: productState,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     description: description,
-    imageUrl: imageUrl,
-    reviews: [{
-      owner: user ? user.uid : 'Anonymous',
-      username: user.displayName ? user.displayName : 'Anonymous',
-      review: review
-    }]
-  }
+    imagesUrls: [],
+    reviews: [
+      {
+        owner: user ? user.uid : "Anonymous",
+        username: user.displayName ? user.displayName : "Anonymous",
+        review: review,
+      },
+    ],
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
     debugger;
     try {
-      await uploadProduct(prod)
-      setLoading(false)
-      toast.success('Lugar cargado correctamente!', { theme: "colored", autoClose: 2000 })
-      setProductName('')
-      setDescription('')
-      setImageUrl(null)
-      setReview('')
-      history('/');
+      await uploadToFirebase();
+      
+
+      setLoading(false);
+      toast.success("Lugar cargado correctamente!", { theme: "colored", autoClose: 2000 });
+      setProductName("");
+      setDescription("");
+      setImageUrl(null);
+      setReview("");
+      history("/");
     } catch (err) {
-      setError(err.message)
-      setLoading(false)
-      toast.error(error ? `${error}` : 'Hubo un error al guardar!', { theme: "colored", autoClose: 2000 })
+      setError(err.message);
+      setLoading(false);
+      toast.error(error ? `${error}` : "Hubo un error al guardar!", { theme: "colored", autoClose: 2000 });
+    }
+  };
+
+  const handleDrop = (event) => {
+    // Access dropped files and other properties from the event object
+    const droppedFiles = event;
+
+    // Ensure maximum of 2 files are selected
+    if (droppedFiles.length > 2) {
+      alert("Only a maximum of 2 images can be uploaded.");
+      return;
     }
 
-  }
+    // Update state with dropped files (assuming they meet criteria)
+    setFileData(droppedFiles);
+  };
 
   function uploadProduct(product) {
-    db
-      .doc(product.id)
-      .set(product)
+    db.doc(product.id).set(product);
   }
 
   const setLocation = async (e) => {
     setProductLocation(e);
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="product__container">
       <h2 className="heading">Cargar un lugar</h2>
-
 
       <div className="input__container">
         <label>Nombre Lugar</label>
@@ -126,7 +152,12 @@ const Camping = () => {
 
       <div className="input__container">
         <label>Direccion</label>
-        <input type="text" value={productAddress} onChange={(e) => setProductAddress(e.target.value)} />
+        <input
+          type="text"
+          value={productAddress}
+          placeholder="En caso de tener, dejar vacio este campo"
+          onChange={(e) => setProductAddress(e.target.value)}
+        />
       </div>
 
       <div className="input__container">
@@ -134,7 +165,7 @@ const Camping = () => {
         <input type="text" value={productState} onChange={(e) => setProductState(e.target.value)} required />
       </div>
 
-      <div >
+      <div>
         <label>Provincia</label>
         <Autocomplete
           disablePortal
@@ -158,22 +189,35 @@ const Camping = () => {
 
       <div className="input__container">
         <label>Descripción</label>
-        <textarea cols="10" rows="10" value={description} onChange={(e) => setDescription(e.target.value)} required />
+        <textarea
+          cols="10"
+          rows="10"
+          placeholder="Comenta una breve descripción del lugar y que incluye el precio indicado"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          required
+        />
       </div>
 
       <div className="input__container">
-        <label>Imagen</label>
-        <input type="file" onChange={handleFileChange} />
+        <label>Imagen </label> (Minimo 1 imagen, maximo 2)
+        <UploadFiles onDrop={handleDrop}></UploadFiles>
       </div>
 
       <div className="input__container">
-        <label>Obervación</label>
-        <input type="text" value={review} onChange={(e) => setReview(e.target.value)} required />
+        <label>Observación</label>
+        <input
+          type="text"
+          placeholder="Contanos como fue tu experiencia en este lugar"
+          value={review}
+          onChange={(e) => setReview(e.target.value)}
+          required
+        />
       </div>
 
-      <button className="btn">{loading ? <Loader height='1em' /> : 'GUARDAR'}</button>
+      <button className="btn">{loading ? <Loader height="1em" /> : "GUARDAR"}</button>
     </form>
-  )
-}
+  );
+};
 
-export default Camping
+export default Camping;

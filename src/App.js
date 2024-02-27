@@ -4,13 +4,14 @@ import { BrowserRouter as Router, Switch, Route, Routes } from 'react-router-dom
 import Header from './components/Header/Header';
 import Home from './pages/Home/Home';
 // import Product from './pages/Product/Product';
-import Reviews from './pages/Reviews/Reviews';
+// import Reviews from './pages/Reviews/Reviews';
 import Login from './pages/Login/Login';
 import SignUp from './pages/SignUp/SignUp';
 import PrivateRoute from './components/PrivateRoute';
 import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
 import { Fragment } from 'react';
 import Camping from './pages/Camping/Camping';
+import CampingDetails from './pages/CampingDetails/CampingDetails';
 
 
 function App() {
@@ -27,7 +28,7 @@ function App() {
             <Camping />
           </PrivateRoute>}>
           </Route>
-          <Route path="/reviews/:id" element={<Reviews />}>
+          <Route path="/details/:id" element={<CampingDetails />}>
             {/* <Reviews /> */}
           </Route>
           <Route path="/signup" element={<SignUp />}>
