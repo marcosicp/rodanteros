@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 
 import Comment from "../../components/Comment/Comment";
 import { Rating } from "@mui/material";
+import PageLoader from "../../components/PageLoader";
 
 const db = firebase.firestore().collection("campings");
 
@@ -82,7 +83,9 @@ const CampingDetails = () => {
     });
   };
 
-  return (
+  return loading ? (
+    <PageLoader />
+  ) : (
     <div className="product__container">
       <CampingCard campingParam={campingParam} />
 

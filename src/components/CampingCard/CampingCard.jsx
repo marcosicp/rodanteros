@@ -3,6 +3,7 @@ import { MdOutlineKeyboardBackspace } from "react-icons/md";
 import "./campingCard.css";
 import { Typography } from "@mui/material";
 import CustomSlider from "../CustomSlider/CustomSlider";
+import PageLoader from "../PageLoader";
 
 const CampingCard = ({ campingParam }) => {
   const history = useNavigate();
@@ -33,11 +34,15 @@ const CampingCard = ({ campingParam }) => {
           {campingParam.username ? campingParam.username : "Anonimo"}
         </h5>
 
-        <CustomSlider>
-          {campingParam.imagesUrls.map((image, index) => {
-            return <img key={index} src={image} alt={"imagen de Acampado"} />;
-          })}
-        </CustomSlider>
+        {campingParam.imagesUrls == undefined ? (
+          null
+        ) : (
+          <CustomSlider>
+            {campingParam.imagesUrls.map((image, index) => {
+              return <img key={index} src={image} alt={"imagen de Acampado"} />;
+            })}
+          </CustomSlider>
+        )}
         {/* <img
           src={campingParam.imageUrl ? campingParam.imageUrl : "https://source.unsplash.com/1600x900/?nature,water"}
           alt={campingParam.name}
