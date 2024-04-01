@@ -34,7 +34,7 @@ const Camping = () => {
       const file = fileData[i];
     
       try {
-        const storageRef = firebase.storage().ref("campings/" + camping.id + "/" + file.name);
+        const storageRef = firebase.storage().ref("campings/" + camping.id);
         const fileRef = storageRef.child(file.name);
         await fileRef.put(file);
         const url = await fileRef.getDownloadURL();

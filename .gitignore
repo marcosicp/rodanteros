@@ -25,4 +25,6 @@ yarn-error.log*
 
 #firebase
 .firebaserc
-.firebase/hosting.*
+/.firebase
+.firebase/
+package-lock.json
