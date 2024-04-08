@@ -16,8 +16,7 @@ const AuthProvider = ({ children }) => {
 
   const signUp = async (email, password, name) => {
     setLoading(false);
-    // var credential = await firebase.auth().fetchSignInMethodsForEmail(email);
-    // debugger;
+    
     return firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
@@ -47,14 +46,22 @@ const AuthProvider = ({ children }) => {
         return response.user;
       })
       .catch((err) => {
-        setError(err.message);
+        switch (err.code) {
+          case "auth/email-already-in-use":
+            setError("El email ya esta en uso");
+            break;
+          case "auth/weak-password":
+            setError("La contraseña debe tener al menos 6 caracteres");
+            break;
+          
+          }
+        // setError(err.message);
         setLoading(false);
       });
   };
 
   const signUpWithGoogle = () => {
     setLoading(true);
-    var credential = firebase.auth().fetchSignInMethodsForEmail();
 
     return (
       firebase
@@ -143,9 +150,9 @@ const AuthProvider = ({ children }) => {
       });
   };
 
-  const signInWithGoogle = () => {
+  const signInWithGoogle = async () => {
     setLoading(true);
-
+    
     return firebase
       .auth()
       .signInWithPopup(new firebase.auth.GoogleAuthProvider())

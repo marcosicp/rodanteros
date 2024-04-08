@@ -1,5 +1,4 @@
 import Avatar from 'react-avatar';
-import {MdDelete} from 'react-icons/md';
 import { useAuth } from '../../contexts/AuthContext';
 
 

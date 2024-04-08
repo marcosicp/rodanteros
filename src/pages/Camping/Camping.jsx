@@ -4,27 +4,78 @@ import { v4 as uuidv4 } from "uuid";
 import { useAuth } from "../../contexts/AuthContext";
 import { toast } from "react-toastify";
 import Loader from "../../components/Loader";
-
+import NumberFormat from "react-number-format";
+import PatternFormat from "react-number-format";
 import "./camping.css";
 import { useNavigate } from "react-router-dom";
-import { Autocomplete, TextField } from "@mui/material";
+import { Autocomplete, Avatar, Box, Checkbox, FormControlLabel, FormGroup, TextField } from "@mui/material";
 import UploadFiles from "../../components/FileUploader";
+import {
+  MdCreditCard,
+  MdCreditCardOff,
+  MdFastfood,
+  MdNoFood,
+  MdOutlinePets,
+  MdOutlineWifi,
+  MdOutlineWifiOff,
+  MdPets,
+  MdPower,
+  MdPowerOff,
+} from "react-icons/md";
 
 const db = firebase.firestore().collection("campingsPending");
 
 const Camping = () => {
   const history = useNavigate();
   const { user } = useAuth();
+  const initFormValues = {
+    placeName: {
+      value: "",
+      error: false,
+      errorMessage: "You must enter a name",
+    },
+    placePrice: {
+      value: 0,
+      error: false,
+      errorMessage: "You must enter an age",
+    },
+    placePhone: {
+      value: "",
+      error: false,
+      errorMessage: "You must enter your liked tech stacks",
+    },
+    placeState: {
+      value: "",
+      error: false,
+      errorMessage: "You must choose your job title",
+    },
+    placeLocation: {
+      value: "",
+      error: false,
+      errorMessage: "You must choose your job title",
+    },
+    placeAddress: {
+      value: "",
+      error: false,
+      errorMessage: "You must choose your job title",
+    },
+    placeDescription: {
+      value: "",
+      error: false,
+      errorMessage: "You must choose your job title",
+    },
+  };
+  const [formValues, setFormValues] = useState(initFormValues);
 
-  const [productName, setProductName] = useState("");
-  const [productPrice, setProductPrice] = useState("");
-  const [productPhone, setProductPhone] = useState("");
-  const [productState, setProductState] = useState("");
-  const [productLocation, setProductLocation] = useState("");
-  const [productAddress, setProductAddress] = useState("");
-  const [description, setDescription] = useState("");
+  const [amenities, setAmenities] = useState({
+    wifi: false,
+    shop: false,
+    power: false,
+    kids: false,
+    cards: false,
+  });
   const [imageUrl, setImageUrl] = useState(null);
-  const [review, setReview] = useState([]);
+  const [review, setReview] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [fileData, setFileData] = useState([]);
@@ -32,7 +83,7 @@ const Camping = () => {
   const uploadToFirebase = async (e) => {
     for (let i = 0; i < fileData.length; i++) {
       const file = fileData[i];
-    
+
       try {
         const storageRef = firebase.storage().ref("campings/" + camping.id);
         const fileRef = storageRef.child(file.name);
@@ -79,14 +130,14 @@ const Camping = () => {
     username: user.displayName ? user.displayName : "Anonymous",
     owner: user ? user.uid : "Anonymous",
     ownerEmail: user ? user.email : "Anonymous",
-    name: productName,
-    price: productPrice,
-    address: productAddress,
-    phone: productPhone,
-    location: productLocation,
-    state: productState,
+    name: formValues.placeName.value,
+    price: formValues.placePrice.value,
+    address: formValues.placeAddress.value,
+    phone: formValues.placePhone.value,
+    location: formValues.placeLocation.value,
+    state: formValues.placeState.value,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    description: description,
+    description: formValues.placeDescription.value,
     imagesUrls: [],
     reviews: [
       {
@@ -95,27 +146,67 @@ const Camping = () => {
         review: review,
       },
     ],
+    amenities: amenities,
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const formFields = Object.keys(formValues);
+    let newFormValues = { ...formValues };
+
+    for (let index = 0; index < formFields.length; index++) {
+      const currentField = formFields[index];
+      const currentValue = formValues[currentField].value;
+
+      if (currentValue === "") {
+        newFormValues = {
+          ...newFormValues,
+          [currentField]: {
+            ...newFormValues[currentField],
+            error: true,
+          },
+        };
+      }
+    }
+
+    setFormValues(newFormValues);
+
+    if (e.target.checkValidity()) {
+    } else {
+      toast.error("Complete los campos requeridos", { theme: "colored", autoClose: 4000 });
+      return;
+    }
+
     setLoading(true);
-    debugger;
+
     try {
+      if (review === "") {
+        camping.reviews = [];
+      }
       await uploadToFirebase();
-      
 
       setLoading(false);
       toast.success("Lugar cargado correctamente!", { theme: "colored", autoClose: 2000 });
-      setProductName("");
-      setDescription("");
+      // setPlaceName("");
+      setFormValues(initFormValues);
+      setFileData([]);
+      setAmenities({
+        wifi: false,
+        shop: false,
+        power: false,
+        kids: false,
+        cards: false,
+      });
+      // setPlaceDescription("");
       setImageUrl(null);
+      setFileData([]);
       setReview("");
-      history("/");
+      // history("/");
     } catch (err) {
       setError(err.message);
       setLoading(false);
-      toast.error(error ? `${error}` : "Hubo un error al guardar!", { theme: "colored", autoClose: 2000 });
+      toast.error(error ? `${error}` : "Hubo un error al guardar!", { theme: "colored", autoClose: 4000 });
     }
   };
 
@@ -125,7 +216,7 @@ const Camping = () => {
 
     // Ensure maximum of 2 files are selected
     if (droppedFiles.length > 2) {
-      alert("Only a maximum of 2 images can be uploaded.");
+      alert("Solo se permiten como máximo dos imágenes.");
       return;
     }
 
@@ -137,86 +228,264 @@ const Camping = () => {
     db.doc(product.id).set(product);
   }
 
-  const setLocation = async (e) => {
-    setProductLocation(e);
+  const handleChangePrestacion = (event) => {
+    setAmenities({
+      ...amenities,
+      [event.target.name]: event.target.checked,
+    });
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues({
+      ...formValues,
+      [name]: {
+        ...formValues[name],
+        value,
+        error: value === "" ? true : false,
+      },
+    });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="product__container">
+    <Box component="form" onSubmit={handleSubmit} className="product__container" noValidate>
       <h2 className="heading">Cargar un lugar</h2>
 
       <div className="input__container">
         <label>Nombre Lugar</label>
-        <input type="text" value={productName} onChange={(e) => setProductName(e.target.value)} required />
-      </div>
-
-      <div className="input__container">
-        <label>Direccion</label>
-        <input
+        <TextField
           type="text"
-          value={productAddress}
-          placeholder="En caso de tener, dejar vacio este campo"
-          onChange={(e) => setProductAddress(e.target.value)}
+          name="placeName"
+          value={formValues.placeName.value}
+          required
+          error={formValues.placeName.error}
+          helpertext={formValues.placeName.error ? "Este campo es requerido" : ""}
+          style={{ backgroundColor: "white" }}
+          onChange={handleChange}
         />
       </div>
 
       <div className="input__container">
+        <label>Direccion</label>
+        <TextField
+          name="placeAddress"
+          type="text"
+          style={{ backgroundColor: "white" }}
+          value={formValues.placeAddress.value}
+          placeholder="En caso de no tener, dejar vacio este campo"
+          onChange={handleChange}
+        ></TextField>
+      </div>
+
+      <div className="input__container">
         <label>Localidad</label>
-        <input type="text" value={productState} onChange={(e) => setProductState(e.target.value)} required />
+        <TextField
+          type="text"
+          name="placeLocation"
+          required
+          style={{ backgroundColor: "white" }}
+          error={formValues.placeLocation.error}
+          helperText={formValues.placeLocation.error ? "Este campo es requerido" : ""}
+          value={formValues.placeLocation.value}
+          onChange={handleChange}
+        />
       </div>
 
       <div>
         <label>Provincia</label>
         <Autocomplete
+          value={formValues.placeState.value}
           disablePortal
+          name="placeState"
           required
+          style={{ backgroundColor: "white" }}
           id="combo-box-demo"
           options={provincesArgentina}
-          onChange={(v, e) => setLocation(e != null ? e.label : "")}
-          renderInput={(params) => <TextField {...params} />}
+          onChange={(v, e) =>
+            handleChange(
+              e != null
+                ? { target: { name: "placeState", value: e.label } }
+                : { target: { name: "placeState", value: "" } }
+            )
+          }
+          renderInput={(params) => (
+            <TextField
+              error={formValues.placeState.error}
+              helperText={formValues.placeState.error ? "Este campo es requerido" : ""}
+              {...params}
+            />
+          )}
         />
       </div>
 
       <div className="input__container">
         <label>Telefono</label>
-        <input type="text" value={productPhone} onChange={(e) => setProductPhone(e.target.value)} />
+
+        <PatternFormat
+          name="placePhone"
+          format="+54 #### #########"
+          renderText={(formattedValue) => <TextField>{formattedValue}</TextField>}
+          onChange={handleChange}
+          value={formValues.placePhone.value}
+        ></PatternFormat>
       </div>
 
       <div className="input__container">
-        <label>Precio</label>
-        <input type="number" value={productPrice} onChange={(e) => setProductPrice(e.target.value)} required />
-      </div>
-
-      <div className="input__container">
-        <label>Descripción</label>
-        <textarea
-          cols="10"
-          rows="10"
-          placeholder="Comenta una breve descripción del lugar y que incluye el precio indicado"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        />
-      </div>
-
-      <div className="input__container">
-        <label>Imagen </label> (Minimo 1 imagen, maximo 2)
-        <UploadFiles onDrop={handleDrop}></UploadFiles>
-      </div>
-
-      <div className="input__container">
-        <label>Observación</label>
-        <input
+        <label>Precio (Si desconoce el precio dejar cero)</label>
+        <NumberFormat
+          name="placePrice"
           type="text"
-          placeholder="Contanos como fue tu experiencia en este lugar"
-          value={review}
-          onChange={(e) => setReview(e.target.value)}
+          renderText={(formattedValue) => <TextField>{formattedValue}</TextField>}
+          decimalScale={2}
+          onChange={handleChange}
+          error={formValues.placePrice.error ? "Este campo es requerido" : ""}
+          prefix={"$"}
+          thousandSeparator="."
+          decimalSeparator=","
+          value={formValues.placePrice.value}
+        ></NumberFormat>
+      </div>
+
+      <div className="">
+        <label>Descripción</label>
+        <TextField
+          name="placeDescription"
+          style={{ backgroundColor: "white" }}
+          rows="5"
+          margin="none"
+          variant="outlined"
+          multiline={true}
+          error={formValues.placeDescription.error}
+          helperText={formValues.placeDescription.error ? "Este campo es requerido" : ""}
+          placeholder="Comenta una breve descripción del lugar y que incluye el precio indicado. Recuerda que es una reseña generica y no personal."
+          value={formValues.placeDescription.value}
+          onChange={handleChange}
           required
         />
       </div>
 
-      <button className="btn">{loading ? <Loader height="1em" /> : "GUARDAR"}</button>
-    </form>
+      <div className="">
+        <label>Instalaciones</label>
+      </div>
+      <FormGroup style={{ display: "flex", flexDirection: "row", justifyContent: "space-evenly" }}>
+        <FormControlLabel
+          labelPlacement="bottom"
+          control={
+            <Checkbox
+              name="wifi"
+              checkedIcon={
+                <Avatar sx={{ bgcolor: "green" }} variant="rounded">
+                  <MdOutlineWifi />
+                </Avatar>
+              }
+              icon={
+                <Avatar sx={{ bgcolor: "red" }} variant="rounded">
+                  <MdOutlineWifiOff />
+                </Avatar>
+              }
+              onChange={handleChangePrestacion}
+            />
+          }
+          label="Wifi"
+        />
+        <FormControlLabel
+          labelPlacement="bottom"
+          control={
+            <Checkbox
+              name="shop"
+              checkedIcon={
+                <Avatar sx={{ bgcolor: "green" }} variant="rounded">
+                  <MdFastfood />
+                </Avatar>
+              }
+              icon={
+                <Avatar sx={{ bgcolor: "red" }} variant="rounded">
+                  <MdNoFood />
+                </Avatar>
+              }
+              onChange={handleChangePrestacion}
+            />
+          }
+          label="Proveduria"
+        />
+        <FormControlLabel
+          labelPlacement="bottom"
+          control={
+            <Checkbox
+              name="power"
+              checkedIcon={
+                <Avatar sx={{ bgcolor: "green" }} variant="rounded">
+                  <MdPower />
+                </Avatar>
+              }
+              icon={
+                <Avatar sx={{ bgcolor: "red" }} variant="rounded">
+                  <MdPowerOff />
+                </Avatar>
+              }
+              onChange={handleChangePrestacion}
+            />
+          }
+          label="Electricidad"
+        />
+        <FormControlLabel
+          labelPlacement="bottom"
+          control={
+            <Checkbox
+              name="cards"
+              checkedIcon={
+                <Avatar sx={{ bgcolor: "green" }} variant="rounded">
+                  <MdCreditCard />
+                </Avatar>
+              }
+              icon={
+                <Avatar sx={{ bgcolor: "red" }} variant="rounded">
+                  <MdCreditCardOff />
+                </Avatar>
+              }
+              onChange={handleChangePrestacion}
+            />
+          }
+          label="Pago Electronico"
+        />
+        {/* <FormControlLabel
+          labelPlacement="bottom"
+          control={
+            <Checkbox
+              name="petFrendly"
+              checkedIcon={
+                <Avatar sx={{ bgcolor: "green" }} variant="rounded">
+                  <MdOutlinePets />
+                </Avatar>
+              }
+              icon={
+                <Avatar sx={{ bgcolor: "red" }} variant="rounded">
+                  <MdPets />
+                </Avatar>
+              }
+              onChange={handleChangePrestacion}
+            />
+          }
+          label="Pago Electronico"
+        /> */}
+      </FormGroup>
+
+      <div className="input__container">
+        <label>Imagen </label>
+        {fileData.length < 1 ? (
+          <label style={{ fontSize: 12, color: "red" }}>Debe agregar una imagen al menos</label>
+        ) : (
+          <p></p>
+        )}
+        (Minimo 1 imagen, maximo 2)
+        <UploadFiles onDrop={handleDrop}></UploadFiles>
+        
+      </div>
+
+      <button type="submit" className="btn">
+        {loading ? <Loader height="1em" /> : "GUARDAR"}
+      </button>
+    </Box>
   );
 };
 

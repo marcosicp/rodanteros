@@ -3,13 +3,14 @@ import { useState, useEffect } from "react";
 import firebase from "../../firebase";
 
 //Components
-import Card from "../../components/Card/Card";
+// import Card from "../../components/Card/Card";
 import PageLoader from "../../components/PageLoader";
 
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import Box, { BoxProps } from "@mui/material/Box";
 import iconRodanteros from "../../assets/rodanteros_img.png";
+import Cardd from "../../components/Card/Card";
 //Firestore database
 const db = firebase.firestore().collection("campings");
 
@@ -133,10 +134,10 @@ const Home = () => {
           renderInput={(params) => <TextField {...params} label="Provincia" />}
         />
       </Box>
-      <div className="products__results">
+      <div className="products__results" style={{height:'100%'}}>
         {loading && <PageLoader />}
         {error && <h5>Algo salio mal</h5>}
-        {products && products.map((camping) => <Card campingParam={camping} key={camping.name} />)}
+        {products && products.map((camping) => <Cardd campingParam={camping} key={camping.name} />)}
       </div>
     </div>
   );

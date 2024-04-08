@@ -51,9 +51,9 @@
   display: none;
 }
 
-.card__text-details .reviews {
+.reviewsbtn {
   text-decoration: none;
-  position: absolute;
+  /* position: absolute; */
   bottom: 1px;
   right: 2px;
   font-size: 12px;
@@ -66,7 +66,7 @@
   background-color: rgb(233, 186, 180); */
 }
 
-.card__text-details .reviews:hover {
+.reviewsbtn:hover {
   background-color: var(--white);
   color: var(--btn-bg);
   outline: 1px solid var(--btn-bg);

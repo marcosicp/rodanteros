@@ -18,7 +18,6 @@ firebase.initializeApp(firebaseConfig);
 // const analitycs = firebase.analytics(app);
 const analytics = firebase.analytics();
 
-// debugger;
 // const isOK=analitycs.app.appCheck;
 // analitycs.logEvent('init');
 
