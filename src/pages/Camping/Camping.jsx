@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import firebase from "../../firebase";
 import { v4 as uuidv4 } from "uuid";
 import { useAuth } from "../../contexts/AuthContext";
@@ -8,7 +8,7 @@ import NumberFormat from "react-number-format";
 import PatternFormat from "react-number-format";
 import "./camping.css";
 import { useNavigate } from "react-router-dom";
-import { Autocomplete, Avatar, Box, Checkbox, FormControlLabel, FormGroup, TextField } from "@mui/material";
+import { Autocomplete, Avatar, Box, Button, Checkbox, FormControlLabel, FormGroup, TextField } from "@mui/material";
 import UploadFiles from "../../components/FileUploader";
 import {
   MdCreditCard,
@@ -31,6 +31,17 @@ const Camping = () => {
   const initFormValues = {
     placeName: {
       value: "",
+      error: false,
+      errorMessage: "You must enter a name",
+    },
+    placeAmenities: {
+      value: {
+        wifi: false,
+        shop: false,
+        power: false,
+        kids: false,
+        cards: false,
+      },
       error: false,
       errorMessage: "You must enter a name",
     },
@@ -65,20 +76,22 @@ const Camping = () => {
       errorMessage: "You must choose your job title",
     },
   };
-  const [formValues, setFormValues] = useState(initFormValues);
 
-  const [amenities, setAmenities] = useState({
+  const amenitiesProps = {
     wifi: false,
     shop: false,
     power: false,
     kids: false,
     cards: false,
-  });
+  };
+  const [formValues, setFormValues] = useState(initFormValues);
+  const [amenities, setAmenities] = useState(amenitiesProps);
   const [imageUrl, setImageUrl] = useState(null);
-  const [review, setReview] = useState("");
+  // const [review, setReview] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [fileData, setFileData] = useState([]);
+  const uploadFilesRef = useRef(null);
 
   const uploadToFirebase = async (e) => {
     for (let i = 0; i < fileData.length; i++) {
@@ -96,7 +109,6 @@ const Camping = () => {
       }
     }
     await uploadProduct(camping);
-    // setImageUrl(url);
   };
 
   const provincesArgentina = [
@@ -139,14 +151,8 @@ const Camping = () => {
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     description: formValues.placeDescription.value,
     imagesUrls: [],
-    reviews: [
-      {
-        owner: user ? user.uid : "Anonymous",
-        username: user.displayName ? user.displayName : "Anonymous",
-        review: review,
-      },
-    ],
-    amenities: amenities,
+    reviews: [],
+    amenities: formValues.placeAmenities.value,
   };
 
   const handleSubmit = async (e) => {
@@ -172,7 +178,7 @@ const Camping = () => {
 
     setFormValues(newFormValues);
 
-    if (e.target.checkValidity()) {
+    if (e.target.checkValidity() && fileData.length > 0) {
     } else {
       toast.error("Complete los campos requeridos", { theme: "colored", autoClose: 4000 });
       return;
@@ -181,29 +187,17 @@ const Camping = () => {
     setLoading(true);
 
     try {
-      if (review === "") {
-        camping.reviews = [];
-      }
+      
       await uploadToFirebase();
 
       setLoading(false);
       toast.success("Lugar cargado correctamente!", { theme: "colored", autoClose: 2000 });
-      // setPlaceName("");
       setFormValues(initFormValues);
       setFileData([]);
-      setAmenities({
-        wifi: false,
-        shop: false,
-        power: false,
-        kids: false,
-        cards: false,
-      });
-      // setPlaceDescription("");
       setImageUrl(null);
-      setFileData([]);
-      setReview("");
       // history("/");
     } catch (err) {
+      debugger;
       setError(err.message);
       setLoading(false);
       toast.error(error ? `${error}` : "Hubo un error al guardar!", { theme: "colored", autoClose: 4000 });
@@ -214,24 +208,76 @@ const Camping = () => {
     // Access dropped files and other properties from the event object
     const droppedFiles = event;
 
+
     // Ensure maximum of 2 files are selected
     if (droppedFiles.length > 2) {
       alert("Solo se permiten como máximo dos imágenes.");
       return;
     }
 
+    if (droppedFiles.length === 1 && fileData.length === 0) {
+      setFileData(
+        droppedFiles.map((file) =>
+          Object.assign(file, {
+            preview: URL.createObjectURL(file),
+          })
+        )
+      );
+
+      // return;
+    } else if (droppedFiles.length === 1 && fileData.length === 1) {
+      // lo agrego a mano para que haga el set completo de files
+      droppedFiles.push(fileData[0]);
+      setFileData(
+        droppedFiles.map((file) =>
+          Object.assign(file, {
+            preview: URL.createObjectURL(file),
+          })
+        )
+      );
+
+      // return;
+    } else if (droppedFiles.length >= 2 && fileData.length === 0) {
+      setFileData(
+        droppedFiles.map((file) =>
+          Object.assign(file, {
+            preview: URL.createObjectURL(file),
+          })
+        )
+      );
+    } else if (droppedFiles.length >= 2 && fileData.length === 1) {
+      droppedFiles.push(fileData[0]);
+      setFileData(
+        droppedFiles.map((file) =>
+          Object.assign(file, {
+            preview: URL.createObjectURL(file),
+          })
+        )
+      );
+    }
     // Update state with dropped files (assuming they meet criteria)
-    setFileData(droppedFiles);
+    // setFileData(droppedFiles);
   };
 
   function uploadProduct(product) {
     db.doc(product.id).set(product);
   }
 
+  const onRemoveImage = (key) => {
+    const listClean = fileData.filter((file) => file.name !== key.name);
+    setFileData(listClean);
+  }
+
   const handleChangePrestacion = (event) => {
-    setAmenities({
-      ...amenities,
-      [event.target.name]: event.target.checked,
+    setFormValues({
+      ...formValues,
+      placeAmenities: {
+        value: {
+          ...formValues.placeAmenities.value,
+          [event.target.name]: event.target.checked,
+        },
+        error: false,
+      },
     });
   };
 
@@ -245,6 +291,10 @@ const Camping = () => {
         error: value === "" ? true : false,
       },
     });
+  };
+
+  const handleChangeRemove = (e) => {
+    setFileData([]);
   };
 
   return (
@@ -297,6 +347,7 @@ const Camping = () => {
           value={formValues.placeState.value}
           disablePortal
           name="placeState"
+          isOptionEqualToValue={(option, value) => option.id === value.id}
           required
           style={{ backgroundColor: "white" }}
           id="combo-box-demo"
@@ -372,7 +423,10 @@ const Camping = () => {
           labelPlacement="bottom"
           control={
             <Checkbox
+              key={Math.random()+4}
               name="wifi"
+              defaultChecked={formValues.placeAmenities.value.wifi}
+              value={formValues.placeAmenities.value.wifi}
               checkedIcon={
                 <Avatar sx={{ bgcolor: "green" }} variant="rounded">
                   <MdOutlineWifi />
@@ -393,6 +447,9 @@ const Camping = () => {
           control={
             <Checkbox
               name="shop"
+              key={Math.random()+3}
+              defaultChecked={formValues.placeAmenities.value.shop}
+              value={formValues.placeAmenities.value.shop}
               checkedIcon={
                 <Avatar sx={{ bgcolor: "green" }} variant="rounded">
                   <MdFastfood />
@@ -412,7 +469,10 @@ const Camping = () => {
           labelPlacement="bottom"
           control={
             <Checkbox
+              value={formValues.placeAmenities.value.power}
+              defaultChecked={formValues.placeAmenities.value.power}
               name="power"
+              key={Math.random()+2}
               checkedIcon={
                 <Avatar sx={{ bgcolor: "green" }} variant="rounded">
                   <MdPower />
@@ -433,6 +493,9 @@ const Camping = () => {
           control={
             <Checkbox
               name="cards"
+              key={Math.random()+1}
+              defaultChecked={formValues.placeAmenities.value.cards}
+              value={formValues.placeAmenities.value.cards}
               checkedIcon={
                 <Avatar sx={{ bgcolor: "green" }} variant="rounded">
                   <MdCreditCard />
@@ -448,26 +511,6 @@ const Camping = () => {
           }
           label="Pago Electronico"
         />
-        {/* <FormControlLabel
-          labelPlacement="bottom"
-          control={
-            <Checkbox
-              name="petFrendly"
-              checkedIcon={
-                <Avatar sx={{ bgcolor: "green" }} variant="rounded">
-                  <MdOutlinePets />
-                </Avatar>
-              }
-              icon={
-                <Avatar sx={{ bgcolor: "red" }} variant="rounded">
-                  <MdPets />
-                </Avatar>
-              }
-              onChange={handleChangePrestacion}
-            />
-          }
-          label="Pago Electronico"
-        /> */}
       </FormGroup>
 
       <div className="input__container">
@@ -478,8 +521,7 @@ const Camping = () => {
           <p></p>
         )}
         (Minimo 1 imagen, maximo 2)
-        <UploadFiles onDrop={handleDrop}></UploadFiles>
-        
+        <UploadFiles onDrop={handleDrop} files={fileData} onRemoveImage={onRemoveImage}></UploadFiles>
       </div>
 
       <button type="submit" className="btn">

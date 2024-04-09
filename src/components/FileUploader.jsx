@@ -61,8 +61,8 @@ const img = {
   height: "100%",
 };
 
-function UploadFiles({ onDrop }) {
-  const [files, setFiles] = useState([]);
+function UploadFiles({ onDrop, files, onRemoveImage }) {
+  // const [files, setFiles] = useState(fileData || []);
 
   const {
     // acceptedFiles,
@@ -76,48 +76,47 @@ function UploadFiles({ onDrop }) {
       "image/*": [".jpeg", ".png", ".jpg"],
     },
     onDrop: (acceptedFiles) => {
-      debugger;
       // si es un solo archivo
-      if (acceptedFiles.length === 1 && files.length === 0) {
-        setFiles(
-          acceptedFiles.map((file) =>
-            Object.assign(file, {
-              preview: URL.createObjectURL(file),
-            })
-          )
-        );
+      // if (acceptedFiles.length === 1 && files.length === 0) {
+      //   // setFiles(
+      //   //   acceptedFiles.map((file) =>
+      //   //     Object.assign(file, {
+      //   //       preview: URL.createObjectURL(file),
+      //   //     })
+      //   //   )
+      //   // );
 
-        // return;
-      } else if (acceptedFiles.length === 1 && files.length === 1) {
-        // lo agrego a mano para que haga el set completo de files
-        acceptedFiles.push(files[0]);
-        setFiles(
-          acceptedFiles.map((file) =>
-            Object.assign(file, {
-              preview: URL.createObjectURL(file),
-            })
-          )
-        );
+      //   // return;
+      // } else if (acceptedFiles.length === 1 && files.length === 1) {
+      //   // lo agrego a mano para que haga el set completo de files
+      //   acceptedFiles.push(files[0]);
+      //   // setFiles(
+      //   //   acceptedFiles.map((file) =>
+      //   //     Object.assign(file, {
+      //   //       preview: URL.createObjectURL(file),
+      //   //     })
+      //   //   )
+      //   // );
 
-        // return;
-      } else if (acceptedFiles.length >= 2 && files.length === 0) {
-        setFiles(
-          acceptedFiles.map((file) =>
-            Object.assign(file, {
-              preview: URL.createObjectURL(file),
-            })
-          )
-        );
-      } else if (acceptedFiles.length >= 2 && files.length === 1) {
-        acceptedFiles.push(files[0]);
-        setFiles(
-          acceptedFiles.map((file) =>
-            Object.assign(file, {
-              preview: URL.createObjectURL(file),
-            })
-          )
-        );
-      }
+      //   // return;
+      // } else if (acceptedFiles.length >= 2 && files.length === 0) {
+      //   // setFiles(
+      //   //   acceptedFiles.map((file) =>
+      //   //     Object.assign(file, {
+      //   //       preview: URL.createObjectURL(file),
+      //   //     })
+      //   //   )
+      //   // );
+      // } else if (acceptedFiles.length >= 2 && files.length === 1) {
+      //   // acceptedFiles.push(files[0]);
+      //   // setFiles(
+      //   //   acceptedFiles.map((file) =>
+      //   //     Object.assign(file, {
+      //   //       preview: URL.createObjectURL(file),
+      //   //     })
+      //   //   )
+      //   // );
+      // }
 
       onDrop(acceptedFiles);
     },
@@ -133,18 +132,13 @@ function UploadFiles({ onDrop }) {
     [isFocused, isDragAccept, isDragReject]
   );
 
-  const handleRemoveImage = (key) => {
-    const newFiles = files.filter((file) => file.name !== key.name);
-    setFiles(newFiles);
-  };
-
   const thumbs = files.map((file) => (
     <div style={thumb} key={file.name}>
       <Badge
         badgeContent={"x"}
         color="secondary"
         onClick={(e) => {
-          handleRemoveImage(file);
+          onRemoveImage(file);
         }}
       >
         <div style={thumbInner}>
@@ -163,7 +157,7 @@ function UploadFiles({ onDrop }) {
 
   useEffect(() => {
     // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
-    return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
+    return () => (files != undefined ? files.forEach((file) => URL.revokeObjectURL(file.preview)) : []);
   }, []);
 
   return (
